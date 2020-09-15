@@ -63,8 +63,12 @@ class BoardApiController extends ApiController {
 	 */
 	public function index($details = null) {
 		$modified = $this->request->getHeader('If-Modified-Since');
+		$etag = null;
 		if ($modified === null || $modified === '') {
 			$boards = $this->boardService->findAll(0, $details);
+			$etag = md5(json_encode(array_map(function(Board $board) {
+				return $board->getId() . '-' . $board->getETag();
+			}, $boards)));
 		} else {
 			$date = Util::parseHTTPDate($modified);
 			if (!$date) {
@@ -72,7 +76,11 @@ class BoardApiController extends ApiController {
 			}
 			$boards = $this->boardService->findAll($date->getTimestamp(), $details);
 		}
-		return new DataResponse($boards, HTTP::STATUS_OK);
+		$response = new DataResponse($boards, HTTP::STATUS_OK);
+		if($etag) {
+			$response->setETag($etag);
+		}
+		return $response;
 	}
 
 	/**

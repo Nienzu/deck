@@ -24,6 +24,7 @@
 
 namespace OCA\Deck\Controller;
 
+use OCA\Deck\Db\Stack;
 use OCA\Deck\StatusException;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http;
@@ -71,7 +72,12 @@ class StackApiController extends ApiController {
 			$since = $date->getTimestamp();
 		}
 		$stacks = $this->stackService->findAll($this->request->getParam('boardId'), $since);
-		return new DataResponse($stacks, HTTP::STATUS_OK);
+		$response = new DataResponse($stacks, HTTP::STATUS_OK);
+		$etag = md5(json_encode(array_map(function(Stack $stack) {
+			return $stack->getId() . '-' . $stack->getETag();
+		}, $stacks)));
+		$response->setETag($etag);
+		return $response;
 	}
 
 	/**

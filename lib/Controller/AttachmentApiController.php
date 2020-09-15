@@ -22,6 +22,7 @@
  */
 namespace OCA\Deck\Controller;
 
+use OCA\Deck\Db\Attachment;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -43,8 +44,12 @@ class AttachmentApiController extends ApiController {
 	 *
 	 */
 	public function getAll() {
-		$attachment = $this->attachmentService->findAll($this->request->getParam('cardId'), true);
-		return new DataResponse($attachment, HTTP::STATUS_OK);
+		$attachments = $this->attachmentService->findAll($this->request->getParam('cardId'), true);
+		$response = new DataResponse($attachments, HTTP::STATUS_OK);
+		$response->setETag(md5(json_encode(array_map(function(Attachment $attachment) {
+			return $attachment->getId() . '-' . $attachment->getETag();
+		}, $attachments))));
+		return $response;
 	}
 
 	/**

@@ -42,4 +42,8 @@ class Attachment extends RelationalEntity {
 		$this->addResolvable('createdBy');
 		$this->addRelation('extendedData');
 	}
+
+	public function getETag(): string {
+		return md5($this->getLastModified());
+	}
 }
