@@ -72,19 +72,19 @@
 				name="notification"
 				:checked="board.settings['notify-due'] === 'all'"
 				@change="updateSetting('notify-due', 'all')">
-				All cards
+				{{ t('deck', 'All cards') }}
 			</ActionRadio>
 			<ActionRadio v-if="showDueSettings"
 				name="notification"
 				:checked="board.settings['notify-due'] === 'assigned'"
 				@change="updateSetting('notify-due', 'assigned')">
-				Assigned cards
+				{{ t('deck', 'Assigned cards') }}
 			</ActionRadio>
 			<ActionRadio v-if="showDueSettings"
 				name="notification"
 				:checked="board.settings['notify-due'] === 'off'"
 				@change="updateSetting('notify-due', 'off')">
-				Off
+				{{ t('deck', 'No notifications') }}
 			</ActionRadio>
 
 			<ActionButton v-if="canManage && !showDueSettings"
